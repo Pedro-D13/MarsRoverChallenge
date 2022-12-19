@@ -112,7 +112,7 @@ def starting_position_and_movement():
 if __name__ == "__main__":
     user_input = list(input("input for grid:").split(" "))
     x, y = int(user_input[1]), int(user_input[0])
-    user_grid = generate_grid(x+1, y+1)
+    user_grid = generate_grid(x, y)
     coords, movements = starting_position_and_movement()
     bot_1 = start_bot(movements, user_grid, *coords.split(','))
     print("bot1")
