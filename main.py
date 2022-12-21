@@ -19,11 +19,11 @@ class state:
 class Bot:
     state: dict
     movement: str
-    grid: list
+    grid: list[list[any]]
     previous_position: tuple
     output: str
 
-    def __init__(self, coords: tuple, direction: str, movement: str, grid):
+    def __init__(self, coords: tuple, direction: str, movement: str, grid) -> None:
         x, y = coords
         self.state: state = state(x, y, direction.strip().capitalize())
         self.movement = movement.upper().strip()
@@ -32,17 +32,17 @@ class Bot:
         self.move_robot()
 
     @property
-    def grid_x_max(self):
+    def grid_x_max(self) -> int:
         return len(self.grid) + 1
 
     @property
-    def grid_y_max(self):
+    def grid_y_max(self) -> int:
         return len(self.grid[0]) + 1
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.arrow()}"
 
-    def arrow(self):
+    def arrow(self) -> str:
         arrow = {
             "N": "⬆️",
             "E": "➡️",
@@ -51,42 +51,41 @@ class Bot:
         }
         return arrow.get(self.state.direction)
 
-    def move_robot(self):
+    def move_robot(self) -> None:
         for move in self.movement:
             if self.movement != "LOST":
                 self.turn_left_or_right(move)
                 self.set_previous_position()
-                # clear position
+                # save position
                 x, y = self.previous_position
-                self.grid[x][y] = ""
                 self.move_bot_along_x_axis(move, x, y)
                 self.move_bot_along_y_axis(move, x, y)
         result = lost(self) if (
                 self.movement == "LOST") else f"({self.state.x_pos}, {self.state.y_pos}, {self.state.direction})"
         self.set_output(result)
 
-    def move_bot_along_x_axis(self, move, x, y):
+    def move_bot_along_x_axis(self, move, x, y) -> None:
         if move == "F" and self.state.direction in "WE":
             val = orientation_value[self.state.direction]['value']
             self.move_bot((val + x), y)
 
-    def move_bot_along_y_axis(self, move, x, y):
+    def move_bot_along_y_axis(self, move, x, y) -> None:
         if move == "F" and self.state.direction in "NS":
             val = orientation_value[self.state.direction]['value']
             self.move_bot(x, (val + y))
 
-    def turn_left_or_right(self, move):
+    def turn_left_or_right(self, move) -> None:
         if move == "L" or move == "R":
             self.state.direction = orientation_value[self.state.direction].get(move)
 
-    def place(self):
+    def place(self) -> None:
         try:
             self.grid[self.state.x_pos][self.state.y_pos] = self
         except IndexError:
             self.set_previous_position()
             lost(self)
 
-    def move_bot(self, new_x, new_y):
+    def move_bot(self, new_x, new_y) -> None:
         try:
             if new_x >= self.grid_x_max or new_x < 0:
                 raise IndexError
@@ -100,38 +99,47 @@ class Bot:
             self.grid[x_value][y_value] = self
             self.movement = "LOST"
 
-    def set_previous_position(self):
+    def set_previous_position(self) -> None:
         self.previous_position = self.state.x_pos, self.state.y_pos
 
-    def set_output(self, string: str):
+    def set_output(self, string: str) -> None:
         self.output = string
 
 
-def generate_grid(horizontal_value, vertical_value):
+def generate_grid(horizontal_value, vertical_value) -> list[list]:
     return [[''] * vertical_value for _ in range(horizontal_value)]
 
 
-def lost(bot: Bot):
+def lost(bot: Bot) -> str:
     return f"({bot.previous_position[0]}, {bot.previous_position[1]}, {bot.state.direction}) {bot.movement}"
 
 
-def print_grid(grid: list, user_grid):
-    grid.reverse()
-    print(*user_grid, sep='\n')
+# def print_grid(grid: list, user_grid):
+#     grid.reverse()
+#     print(*user_grid, sep='\n')
 
 
-def start_bot(movements: str, user_grid, x, y, direction: str):
+def start_bot(movements: str, user_grid, x, y, direction: str) -> Bot:
     return Bot((int(x), int(y)), direction, movements, user_grid)
 
 
-def starting_position_and_movement():
-    __coords, __movements = input("input for robot").strip().lstrip("(").rsplit(")")
+def inputs_and_setup(usr_input) -> tuple:
+    __coords, __movements = parse(usr_input.replace(" ",""))
     return __coords, __movements
 
 
+def parse(usr_input) -> str:
+    return usr_input.strip().lstrip("(").rsplit(")")
+
+
 if __name__ == "__main__":
-    x_val, y_val = map(int, input("input for grid:").split())
-    user_grid = generate_grid(x_val, y_val)
-    coords, movements = starting_position_and_movement()
-    bot_1 = start_bot(movements, user_grid, *coords.split(','))
+    horizontal_value, vertical_value = map(int, input("input for grid:").split())
+    usr_grid = generate_grid(horizontal_value, vertical_value)
+
+    usr_coords, usr_movements = inputs_and_setup(input("input for robot 1:"))
+    bot_1 = start_bot(usr_movements, usr_grid, *usr_coords.split(','))
+
+    usr_coords, usr_movements = inputs_and_setup(input("input for robot 2:"))
+    bot_2 = start_bot(usr_movements, usr_grid, *usr_coords.split(','))
     print(bot_1.output)
+    print(bot_2.output)
