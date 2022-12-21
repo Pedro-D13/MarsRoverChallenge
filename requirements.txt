@@ -1,0 +1,10 @@
+attrs==22.1.0; python_version >= "3.7"
+colorama==0.4.6; python_version >= "3.7" and python_full_version < "3.0.0" and sys_platform == "win32" or sys_platform == "win32" and python_version >= "3.7" and python_full_version >= "3.7.0"
+exceptiongroup==1.0.4; python_version < "3.11" and python_version >= "3.7"
+iniconfig==1.1.1; python_version >= "3.7" \
+    --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
+    --hash=sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32
+packaging==22.0; python_version >= "3.7"
+pluggy==1.0.0; python_version >= "3.7"
+pytest==7.2.0; python_version >= "3.7"
+tomli==2.0.1; python_version < "3.11" and python_version >= "3.7"
